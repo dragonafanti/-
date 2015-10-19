@@ -38,7 +38,7 @@ def creat_testsuite():
     return testsuite
 
 # suite.addTest(unittest.defaultTestLoader.loadTestsFromName(test))
-# suite.addTest(Login.Login("test_open_url"))
+# suite.addTest(Login.Login("testLogin_Login)
 # runner = unittest.TextTestRunner()
 if __name__ == "__main__":
     

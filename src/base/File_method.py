@@ -14,18 +14,20 @@ class File_method(object):
     '''
 
 
-    def get_file_path(self,file_name):
+    def get_file_path(self,file_name,add_path):
         '''
-                        返回文件到res的路径  
+                        返回main文件所在的路径
         ep:
         obj = File_method.File_method()
-        file_path=obj.get_file_path("rrr.csv")
+        file_path=obj.get_file_path("rrr.csv"，"res")
         :param file_name: 文件名
+        :param add_path: 后面添加的路径
         '''
         
         file_path = os.getcwd()
         path=  file_path[0:len(file_path)-3]
-        all_file_path = path+"res\\"+file_name
+        print path
+        all_file_path = path+add_path+"\\"+file_name
         return all_file_path
                   
         

@@ -13,7 +13,7 @@ class Excel_rd(object):
 
 
     def __init__(self):
-       self._file = File_method.File_method()
+        self._file = File_method.File_method()
 #        self._xl_name = u"登录.xlsx"
         
     def get_excel_table(self,file_name,excel_sheet):
@@ -26,7 +26,7 @@ class Excel_rd(object):
             _table = obj.get_excel_table(u"登录.xlsx", u"Sheet1") 
         '''
        
-        _file_path = self._file.get_file_path(file_name)
+        _file_path = self._file.get_file_path(file_name,"res")
         _data = xlrd.open_workbook(_file_path)
         _table = _data.sheet_by_name(excel_sheet)
         return _table
@@ -92,4 +92,23 @@ class Excel_rd(object):
         '''
         
         return xlrd.cellname(rowx, colx)
+    
+    def sheet_to_dict(self,excel_name,sheet_name):
+        '''
+                        将EXCEL表指定内容，
+        _excel.sheet_to_dict(u"登录.xlsx", "Sheet3")
+        :param excel_name: excel表名称
+        :param sheet_name: sheet表名称
+        '''
+        _table_ = self.get_excel_table(excel_name, sheet_name)
+        _row_num_ = self.get_row_number(_table_)
+        _list_ = []
+        for i in range(_row_num_):
+            _temp_ = self.get_row_value(_table_, i)
+#             print _temp_
+#             _dict_[_temp_[0]] = _temp_[1]
+            _list_.append(_temp_)
+        return _list_
+        
+        
         

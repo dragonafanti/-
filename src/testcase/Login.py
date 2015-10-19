@@ -16,16 +16,16 @@ from base import *
 from collections import _field_template
 import xlrd
 
-class Test(unittest.TestCase):
+class Login(unittest.TestCase):
 
 
     def setUp(self):
-        aa = webdriver.FirefoxProfile("D:\FirefoxProfilesDir")
-        self.driver = webdriver.Firefox(aa)
-        self.driver.implicitly_wait(30)
-        self.base_url = "http://obttst.btravelplus.com:8091/"
-        self.verificationErrors = []
-        self.accept_next_alert = True
+#         aa = webdriver.FirefoxProfile("D:\FirefoxProfilesDir")
+#         self.driver = webdriver.Firefox(aa)
+#         self.driver.implicitly_wait(30)
+#         self.base_url = "http://obttst.btravelplus.com:8091/"
+#         self.verificationErrors = []
+#         self.accept_next_alert = True
         pass
 
     def tearDown(self):
@@ -44,16 +44,18 @@ class Test(unittest.TestCase):
 #         _cl_= self.driver.find_element(By.CLASS_NAME, "table responsive")
 #         print _cl_.text
 
-        
+#         
         _file = File_method.File_method()
-        
-        print excel_name,_file
+#         
+#         print excel_name,_file
         _excel = Excel_rd.Excel_rd()
-        _tabel = _excel.get_excel_table(excel_name+_file, "Sheet1")
-        _eee_= _excel.get_row_value(_tabel, 1)
-        print _eee_
-
-
+#         _tabel = _excel.get_excel_table(excel_name+_file, "Sheet1")
+#         _eee_= _excel.get_row_value(_tabel, 1)
+#         print _eee_
+#         _excel_name =  _file.get_file_path(u"登录.xlsx", "res")
+        _aa =  _excel.sheet_to_dict(u"登录.xlsx", "Sheet3")
+        print _aa[0][0]
+        print _aa
 
 
 #         self.assertEqual(eee, '差旅专家在线预订系统111', "成功打开网站")
