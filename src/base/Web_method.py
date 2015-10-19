@@ -47,8 +47,7 @@ class Web_method(object):
                 time.sleep(3)
                 element_result = dr.find_element(by_how,element)                
             except NoSuchElementException :
-                loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
-                dr.get_screenshot_as_file(SAVE_ADDRESS+loca_time+"_"+element+".png")           
+                self.save_error_png(dr, element)        
             return element_result
 
     def input_by_dict(self,dr,by_how,itme_id,itme_dict,range_num):
@@ -67,8 +66,27 @@ class Web_method(object):
                     element.send_keys(itme_dict.get(itme_id[id_index])) 
             
         except NoSuchElementException :
-            loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
-            dr.get_screenshot_as_file(SAVE_ADDRESS+loca_time+"_"+itme_id[id_index]+".png")
+            self.save_error_png(dr, itme_id[id_index])
+      
+    def input_by_list(self,dr,_list):
+        '''
+                                    在指定地点输入指定内容
+        :param dr: 浏览器
+        :param _list:转进来的列表，一般为4个值（by,元素名称，how,输入值）
+        
+        '''
+        
+        _by_how_ = _list[0]
+        _element_id_ = _list[1]
+        _send_key_ = list[3]
+        try:  
+            
+            _element = Web_method.find_element_by(self, dr, _by_how_, _element_id_)  
+            _element.clear()
+            _element.send_keys(_send_key_)
+                           
+        except NoSuchElementException :
+            self.save_error_png(dr, _element_id_)
                 
     def select_by_dict(self,dr,by_how,itme_id,itme_dict,range_num):
         #循环输入 
@@ -84,26 +102,45 @@ class Web_method(object):
                     element = Web_method.find_element_by(self, dr, by_how, itme_id[id_index])  
                     Select(element).select_by_visible_text(itme_dict.get(itme_id[id_index]))                
         except NoSuchElementException :
-#             loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
-#             dr.get_screenshot_as_file(SAVE_ADDRESS+loca_time+"_"+itme_id[id_index]+".png")
-            Web_method.save_error_png(dr, itme_id[id_index])
+            self.save_error_png(dr, itme_id[id_index])
+            
      
     def click_by(self,dr,by_how,element):
-        #循环输入        
+                
        
         try:
             element = Web_method.find_element_by(self, dr, by_how,element)  
             element.click()              
         except NoSuchElementException :
-#             loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
-#             dr.get_screenshot_as_file(SAVE_ADDRESS+loca_time+"_"+element+".png")
-            Web_method.save_error_png(dr, element)
+            self.save_error_png(dr, element)
+            
+    def click_by_list(self,dr,_list):
+        '''
+                        点击    
+        :param dr: 浏览器
+        :param _list:转进来的列表类型，一般为4个值（by,元素名称，how,输入值）
         
-    def switch_frame(self,dr,left_frame):#切换框架
+        '''
+        _by_how_ = _list[0]
+        _element_id_ = _list[1]
+          
+       
+        try:
+            element = Web_method.find_element_by(self, dr, _by_how_,_element_id_)  
+            element.click()              
+        except NoSuchElementException :
+            self.save_error_png(dr, _element_id_)    
+            
+    def switch_frame(self,dr,_frame_name):#切换框架
+        '''
+                        切换指定框架
+        :param dr:浏览器
+        :param _frame_name: 框架部分名称
+        '''
         dr.implicitly_wait(20)
 #         dr.switch_to_window(handle)
         dr.switch_to_default_content()
-        dr.switch_to_frame(left_frame)
+        dr.switch_to_frame(_frame_name)
     
     def wait_handle(self,dr,handle):#处理窗口句柄
         for i in range(1,30):
@@ -114,6 +151,11 @@ class Web_method(object):
                 break
             
     def save_error_png(self,dr,error_name):
+        '''
+                        截图 取当前时间加命名
+        :param dr:
+        :param error_name:截图姓名
+        '''
         loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
         dr.get_screenshot_as_file(SAVE_ADDRESS+loca_time+"_"+error_name+".png")
          
@@ -121,10 +163,10 @@ class Web_method(object):
         """判断元素是否存在，不存在则截图"""
         try: 
             dr.find_element(by=how, value=what)
-        except NoSuchElementException, e: 
+        except NoSuchElementException: 
             loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
             dr.get_screenshot_as_file(SAVE_ADDRESS+loca_time+"_"+what+".png")
-            Web_method.save_error_png(self, dr, what)
+            self.save_error_png(self, dr, what)
             return False
         return True
    
