@@ -1,84 +1,85 @@
 #coding= utf-8
 '''
-Created on 201509018
+Created on 2015.10.16
 
 @author: wanglong
 '''
 import unittest
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoAlertPresentException
-import unittest, time, re
 from base import *
-from collections import _field_template
-import xlrd
+import time
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.wait import WebDriverWait
 
 class Login(unittest.TestCase):
 
 
     def setUp(self):
-#         aa = webdriver.FirefoxProfile("D:\FirefoxProfilesDir")
-#         self.driver = webdriver.Firefox(aa)
-#         self.driver.implicitly_wait(30)
-#         self.base_url = "http://obttst.btravelplus.com:8091/"
-#         self.verificationErrors = []
-#         self.accept_next_alert = True
-        pass
-
+        self._value = Value.Value()
+        self._excel = Excel_rd.Excel_rd()
+        self._driver = self._value.browser_firefox
+        
+        self._web = Web_method.Web_method()
+        self._web.access_ip(self._driver, self._value.ADDRESS_IP)
+        self._driver.implicitly_wait(10)
     def tearDown(self):
-#         self.driver.quit()
         pass
 
-    def test_1_me(self):
        
-#         self.driver.get(self.base_url)
-#         self._obj = Tools.Tools()
-#         self._obj.input_send_key(self.driver,By.ID,vvvv._id, vvvv._dict)
-#         self._obj.input_send_key(self.driver,By.NAME,vvvv._name, vvvv._dict)
-#         self.driver.find_element(By.NAME,'submit').click()
-#         time.sleep(10)
-#         _va_= self.driver.find_element(By.XPATH,".//*[@id='tablist']/tbody/tr[2]/td[2]")
-#         _cl_= self.driver.find_element(By.CLASS_NAME, "table responsive")
-#         print _cl_.text
-
-#         
-        _file = File_method.File_method()
-#         
-#         print excel_name,_file
-        _excel = Excel_rd.Excel_rd()
-#         _tabel = _excel.get_excel_table(excel_name+_file, "Sheet1")
-#         _eee_= _excel.get_row_value(_tabel, 1)
-#         print _eee_
-#         _excel_name =  _file.get_file_path(u"登录.xlsx", "res")
-        _aa =  _excel.sheet_to_dict(u"登录.xlsx", "Sheet3")
-        print _aa[0][0]
-        print _aa
-
-
-#         self.assertEqual(eee, '差旅专家在线预订系统111', "成功打开网站")
-      
-#         self.assertTrue(eee, "我是断言出来的")
-#         print By.ID
-#         self.driver.find_element_by_id(id_)
-#         self.driver.find_element_by_name(name)
-#         self.driver.find_element(By.NAME, value)
+                
+    def test_case_1(self):
+        u"""公司代码为空"""
+        _result_ = self._web.run_general_case(self._driver, u"Login.et", "Case1")
+        self.assertTrue(_result_, "公司代码为空测试失败")
+        
+    def test_case_2(self):
+        u"""用户名为空"""
+        _result_ = self._web.run_general_case(self._driver, u"Login.et", "Case2")
+        self.assertTrue(_result_, "用户名为空测试失败") 
+    def test_case_3(self):
+        u"""用户密码为空"""
+        _result_ = self._web.run_general_case(self._driver, u"Login.et", "Case3")
+        self.assertTrue(_result_, "用户密码为空测试失败")       
+                    
+    def test_case_10(self):
+        u"""正常登录是否成功"""
+        _result_ = self._web.run_general_case(self._driver, u"Login.et", "Case10")
+        self.assertTrue(_result_, "测试正常登录失败") 
         
         
         
-#         for i,j in _id,_value:
-#             self.driver.find_element_by_id(i).clear()
-#             self.driver.find_element_by_id(i).send_keys(j)
-#         driver.find_element_by_id("username").clear()
-#         driver.find_element_by_id("username").send_keys("testliu")
-#         driver.find_element_by_id("userpwd_c").clear()
-#         driver.find_element_by_id("userpwd_c").send_keys("111111")
-#         driver.find_element_by_name("checkCode").clear()
-#         driver.find_element_by_name("checkCode").send_keys("citsky20150602")
-#         driver.find_element_by_name("submit").click()
-
+        
+        
+        
+        
+                        
+                
+    def example_case_2(self):
+        u"""正常登录是否成功"""
+                         
+        
+        dr = self._driver
+        self._case1 = self._excel.sheet_to_dict(u"Login.et", "Case1")
+        _other_dict_ = {"1":"self._web.input_by_list(dr, 'username', 'id', _sendkey_)",
+                        "2":"self._web.find_element(dr,'ui-dialog-content', 'class name').text",
+                        "3":"print _eee_"}
+        _vvv_ =["qew","testliu","wwqe123","/$%%"]
+        for _sendkey_ in _vvv_:
+            for _row_val_ in self._case1:
+                _run_type_ = _row_val_[2]
+                time.sleep(2)
+#                 if"other"  in   _run_type_:
+#                     _other_num_ = _row_val_[3]
+# #                     print _other_dict_[_other_num_]
+# #                     self._web.input_by_list(dr, "username", "id", _sendkey_)
+#                     print _row_val_[3]
+#                     eval(_row_val_[3])
+#                 else:
+                
+                _resule_ = self._web.run_list_step(dr, _row_val_)
+                if "find" in _run_type_:
+                    self.assertTrue(_resule_, _run_type_+"判定失败")
+        
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

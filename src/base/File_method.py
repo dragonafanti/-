@@ -5,8 +5,8 @@
 @author: wanglong
 '''
 import os
-import csv
-
+import csv,ConfigParser
+from ConfigParser import NoSectionError
 class File_method(object):
 
     '''
@@ -14,7 +14,7 @@ class File_method(object):
     '''
 
 
-    def get_file_path(self,file_name,add_path):
+    def get_file_path(self,file_name,add_path=""):
         '''
                         返回main文件所在的路径
         ep:
@@ -26,7 +26,6 @@ class File_method(object):
         
         file_path = os.getcwd()
         path=  file_path[0:len(file_path)-3]
-        print path
         all_file_path = path+add_path+"\\"+file_name
         return all_file_path
                   
@@ -95,4 +94,33 @@ class File_method(object):
         for id_name in all_values:
             get_dict.setdefault(id_name[key_colum],id_name[value_colum])
         return get_dict
+    
+    def get_config_opt(self,key_value):
+        _config_name_ = 'config.ini'
+        _path =self.get_file_path('config.ini',"src//base//")
+        _config_ = ConfigParser.ConfigParser()
+        try:
+            _config_.readfp(open(_path))
         
+        except IOError:
+            print ("文件路径错误，路径为 "+_path)
+        try:
+            _get_value_ = _config_.get("KEY_CONFIG", key_value)
+            return _get_value_
+        except ConfigParser.NoOptionError:
+            print (key_value+"不存在")
+            return False
+        
+    def get_sention_count(self,_sention):
+        '''
+                           获得制定区域的行数
+        :param _sention:区域标签
+        '''
+        config = ConfigParser.ConfigParser
+        try:
+            _list_sention_ = config.items(_sention)
+            return len(_list_sention_)
+        except NoSectionError:
+            print "文件中无此字段"
+            return 0    
+    

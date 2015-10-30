@@ -4,7 +4,7 @@
 
 @author: wanglong
 '''
-from testcase import Login
+
 from testcase import *
 
 
