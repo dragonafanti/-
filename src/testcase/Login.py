@@ -10,14 +10,14 @@ import time
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-class Login(unittest.TestCase):
+class Login(unittest.TestCase,Value.Value):
 
 
     def setUp(self):
         self._value = Value.Value()
         self._excel = Excel_rd.Excel_rd()
-        self._driver = self._value.browser_firefox
-        
+#         self._driver = self._value.browser_firefox
+        self._driver = self.browser_firefox
         self._web = Web_method.Web_method()
         self._web.access_ip(self._driver, self._value.ADDRESS_IP)
         self._driver.implicitly_wait(10)

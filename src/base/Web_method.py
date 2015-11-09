@@ -6,7 +6,8 @@
 # '''
 from selenium import webdriver
 import time,types,os
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException,\
+    NoSuchFrameException
 from selenium.webdriver.support.ui import Select
 import sys
 from base import File_method
@@ -15,9 +16,13 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class Web_method(object):
-    def open_url(self,profile_dir):
+    def __init__(self):
+#         global _bbb_
+        pass
+    
+    def open_brower(self,profile_dir):
         '''
-        
+         
                         使用火狐自定义的预设路径，来打开浏览器。 打开办法，开始-运行-firefox -p
         :param profile_dir: 火狐的预设路径 
         PROFILE_DIR = "D:\FirefoxProfilesDir"
@@ -33,15 +38,19 @@ class Web_method(object):
         return self.handle
         
     
-    def access_ip(self,dr,ip):#访问地址
+    def open_url(self,dr,step_list):#访问地址
+        
         '''
                           根据IP地址访问页面
         :param dr:浏览器
         :param ip:需要转入的IP地址
         '''
-        
-        print("输入IP地址")
-        dr.get(ip)
+        if type(step_list)== types.StringType:
+            _ip_= step_list
+        else:
+            _ip_ = self.get_step_value(step_list)
+        dr.get(_ip_)
+        print("输入IP地址 "+_ip_)
         time.sleep(3)
     def get_step_desc(self,step_list):
         '''
@@ -93,7 +102,7 @@ class Web_method(object):
             print(u"关键字"+_element_key_)
             return _element_                
         except NoSuchElementException :
-            self.save_error_png(dr, _element_key_)
+            self.save_error_png(dr, "查找元素名_"+_element_key_)
             print(u"寻找关键字"+_element_key_+u"失败")        
             return False
 
@@ -135,10 +144,11 @@ class Web_method(object):
                 _send_key_ = self.get_step_value(step_list)
             _element_.clear()
             _element_.send_keys(_send_key_)
+            return True
         except AttributeError:
             print u"没有send_key属性，无法输入"+_send_key_
             self.save_error_png(dr, _send_key_)
-                
+            return False    
         
     def select_by_dict(self,dr,by_how,itme_id,itme_dict,range_num):
         #循环输入 
@@ -166,10 +176,32 @@ class Web_method(object):
         '''
         try:
             _element_ = self.find_element(dr, step_list,by_how)
-            _element_.click()              
+            _element_.click()
+            return True            
         except AttributeError :
+            return False
             print u"无法进行cilck操作"
             
+    def select_by_list(self,dr,step_list,by_how="",send_key=""):
+        
+        _element_ = self.find_element(dr, step_list,by_how)
+        
+        if type(step_list) == types.StringType:
+            _send_key_ = send_key
+        else:
+            _send_key_ = self.get_step_value(step_list)
+            
+        try:
+            if _element_:
+                Select(_element_).select_by_visible_text(_send_key_)
+    #         return Select(_element_).select_by_visible_text(_send_key_)
+            else:
+                return False    
+        except NoSuchElementException:
+            print u"没有找到下拉列表内容为："+_send_key_
+            self.save_error_png(dr, u"查找下拉列表值_"+_send_key_)
+            return False
+        return True
     def set_other_auto(self,dr,step_list):
          
         try:
@@ -198,7 +230,13 @@ class Web_method(object):
             _frame_name = self.get_step_value(step_list)
         dr.implicitly_wait(20)
         dr.switch_to_default_content()
-        return dr.switch_to_frame(_frame_name)
+        try:
+            dr.switch_to_frame(_frame_name)
+            return True
+        except NoSuchFrameException:
+            print u"没有找到： "+_frame_name
+            self.save_error_png(dr, _frame_name)
+            return False
     
     def wait_handle(self,dr,handle):#处理窗口句柄
         for i in range(1,30):
@@ -254,16 +292,15 @@ class Web_method(object):
             self.save_error_png(dr, expect_title)
             return False
     
-    def is_text_present(self,dr,step_list,by_how=""):
+    def is_text_present(self,dr,step_list,by_how="",expect_text=""):
         '''
                         判断从页面元素获得的文本是否为期望内容
         :param dr:
-        :param step_list:期望标题
+        :param step_list:行内容。或者寻找元素的关键字
         '''
-        if type(step_list)== types.StringType:
-            expect_text = step_list
-        else:
+        if type(step_list)!= types.StringType:
             expect_text = self.get_step_value(step_list)
+           
         _element_ = self.find_element(dr,step_list,by_how)
         if _element_:
             try:
