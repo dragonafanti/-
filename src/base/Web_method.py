@@ -7,7 +7,7 @@
 from selenium import webdriver
 import time,types,os
 from selenium.common.exceptions import NoSuchElementException,\
-    NoSuchFrameException
+    NoSuchFrameException, NoSuchWindowException
 from selenium.webdriver.support.ui import Select
 import sys
 from base import File_method
@@ -50,7 +50,7 @@ class Web_method(object):
         else:
             _ip_ = self.get_step_value(step_list)
         dr.get(_ip_)
-        print("输入IP地址 "+_ip_)
+#         print("输入IP地址 "+_ip_)
         time.sleep(3)
     def get_step_desc(self,step_list):
         '''
@@ -83,6 +83,19 @@ class Web_method(object):
         '''
         return str(step_list[4])
     
+    def time_print(self,ouput_text,row = " "):
+        '''
+                        打印含有日期和行号的内容
+        :param ouput_text:输出的文本
+        :param row:行号
+        '''
+        loca_time= time.strftime('%Y-%m-%d %X',time.localtime())
+        _blank_ = "  "
+        if len(str(row))>1:
+            _blank_ = " "
+        print str(row)+_blank_+loca_time+" : "+ouput_text
+            
+        
     def find_element(self,dr,step_list,by_how=""):
         '''
                          寻找元素
@@ -99,11 +112,12 @@ class Web_method(object):
                 _by_how_ = self.get_step_by_how(step_list)
                 _element_key_ = self.get_step_key_name(step_list)
                 _element_ = dr.find_element(_by_how_,_element_key_)
-            print(u"关键字"+_element_key_)
+            self.time_print(u"元素值为 :"+_element_key_)
             return _element_                
         except NoSuchElementException :
-            self.save_error_png(dr, "查找元素名_"+_element_key_)
-            print(u"寻找关键字"+_element_key_+u"失败")        
+            self.time_print(u"寻找元素"+_element_key_+u"失败")
+            self.save_error_png(dr, u"查找元素名 : "+_element_key_)
+            
             return False
 
     def input_by_dict(self,dr,by_how,itme_id,itme_dict,range_num):
@@ -146,7 +160,7 @@ class Web_method(object):
             _element_.send_keys(_send_key_)
             return True
         except AttributeError:
-            print u"没有send_key属性，无法输入"+_send_key_
+            self.time_print(u"没有send_key属性，无法输入"+_send_key_)
             self.save_error_png(dr, _send_key_)
             return False    
         
@@ -179,8 +193,8 @@ class Web_method(object):
             _element_.click()
             return True            
         except AttributeError :
+            self.time_print(u"无法进行cilck操作")
             return False
-            print u"无法进行cilck操作"
             
     def select_by_list(self,dr,step_list,by_how="",send_key=""):
         
@@ -194,11 +208,10 @@ class Web_method(object):
         try:
             if _element_:
                 Select(_element_).select_by_visible_text(_send_key_)
-    #         return Select(_element_).select_by_visible_text(_send_key_)
             else:
                 return False    
         except NoSuchElementException:
-            print u"没有找到下拉列表内容为："+_send_key_
+            self.time_print(u"没有找到下拉列表内容为："+_send_key_)
             self.save_error_png(dr, u"查找下拉列表值_"+_send_key_)
             return False
         return True
@@ -216,8 +229,8 @@ class Web_method(object):
                         切换到默认框架
         :param dr:
         '''
-        return dr.switch_to_default_content()   
-                        
+        return dr.switch_to_default_content() 
+      
     def switch_frame(self,dr,step_list):#切换框架
         '''
                         切换指定框架
@@ -228,15 +241,30 @@ class Web_method(object):
             _frame_name = step_list
         else:
             _frame_name = self.get_step_value(step_list)
-        dr.implicitly_wait(20)
-        dr.switch_to_default_content()
         try:
             dr.switch_to_frame(_frame_name)
             return True
         except NoSuchFrameException:
-            print u"没有找到： "+_frame_name
+            self.time_print(u"没有找到frame： "+_frame_name)
             self.save_error_png(dr, _frame_name)
             return False
+    def switch_windows(self,dr,step_list):
+        '''
+                            切换窗体
+        :param dr:
+        :param step_list:
+        '''
+        if type(step_list)== types.StringType:
+            handle = step_list
+        else:
+            handle = self.get_step_value(step_list)
+        try:
+            dr.switch_to_window(handle)
+        except NoSuchWindowException:
+            self.time_print(u"没有找到windows： "+handle)
+            self.save_error_png(dr, handle)
+            return False
+        return True
     
     def wait_handle(self,dr,handle):#处理窗口句柄
         for i in range(1,30):
@@ -255,7 +283,7 @@ class Web_method(object):
         file_path = os.getcwd()
         path = file_path[0:len(file_path) - 3]
         _save_address = path +"errorpng\\" 
-        loca_time= time.strftime("%Y%m%d%H%M%S", time.localtime())
+        loca_time= time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
         dr.get_screenshot_as_file(_save_address+loca_time+"_"+error_name+".png")
        
     def is_element_present(self,dr,step_list, by_how =""):
@@ -285,10 +313,9 @@ class Web_method(object):
             expect_title = self.get_step_value(step_list)
             _now_title_ =  dr.title
         if _now_title_ == expect_title:
-            print u"标题为: "+_now_title_
             return True
         else:
-            print u"实际标题为："+_now_title_+u"与预期标题："+expect_title+u"不符"
+            self.time_print(u"实际标题为："+_now_title_+u"与预期标题："+expect_title+u"不符")
             self.save_error_png(dr, expect_title)
             return False
     
@@ -306,14 +333,13 @@ class Web_method(object):
             try:
                 _now_text_=_element_.text
                 if _now_text_ == expect_text: 
-                    print u"文本信息为: "+_now_text_
                     return True
                 else:
+                    self.time_print(u"实际内容为："+_now_text_+u" 和预期不匹配")
                     self.save_error_png(dr, expect_text)
-                    print u"实际内容为："+_now_text_+u" 和预期不匹配"
                     return False
             except AttributeError:
-                print u"页面元素不存在text属性"
+                self.time_print(u"页面元素不存在text属性")
         else:
             return False
         
@@ -347,11 +373,16 @@ class Web_method(object):
         :param step_list:
         '''
         _key_ = self.get_step_fun(step_list)
+        _case_desc_ = self.get_step_desc(step_list)
+        
+        
         self._file = File_method.File_method()
         _value_ = self._file.get_config_opt(_key_)
+        self.time_print(u"操作命令为  "+_value_)
         if _value_:
             _result_ = eval(_value_)
         else:
+            self.time_print(u"执行命令失败")
             _result_ = False
         return _result_
     
@@ -364,12 +395,20 @@ class Web_method(object):
         '''
         self._excel = Excel_rd.Excel_rd()
         self._case = self._excel.sheet_to_dict(file_name,file_sheet)
+        _row_ = 0
         for step_list in self._case:
+            _key_ = self.get_step_value(step_list)
             _case_desc_ = self.get_step_desc(step_list)
-            print _case_desc_
+            if _case_desc_ == "用例描述":
+                _row_ += 1
+                continue
+            
+            self.time_print(u"用例描述-"+_case_desc_+u"; 输入值 -  "+_key_, _row_)
             _run_type_ = self.get_step_fun(step_list)
             time.sleep(2)
             _result_ = self.run_list_step(dr, step_list)
+            _row_ += 1
             if "find" in _run_type_ and _result_ == False:
-                return _result_          
+                return _result_
+                      
         return True    
